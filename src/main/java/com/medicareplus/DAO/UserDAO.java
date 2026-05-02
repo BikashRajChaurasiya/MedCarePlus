@@ -2,6 +2,7 @@ package com.medicareplus.DAO;
 
 import com.medicareplus.config.DBConnection;
 import com.medicareplus.model.User;
+import com.medicareplus.util.EncryptionUtil;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +24,11 @@ public class UserDAO {
     }
 
     public User login(String email, String password) throws SQLException, ClassNotFoundException {
-        String sql = "SELECT * FROM users WHERE email = ? AND password = ? AND is_active = 1 AND (account_locked_until IS NULL OR account_locked_until <= NOW())";
+        String sql = "SELECT * FROM users WHERE email = ? AND (password = ? OR password = ?) AND is_active = 1 AND (account_locked_until IS NULL OR account_locked_until <= NOW())";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
             ps.setString(2, password);
+            ps.setString(3, EncryptionUtil.sha256(password));
             try (ResultSet rs = ps.executeQuery()) { return rs.next() ? mapUser(rs) : null; }
         }
     }
