@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Admin Controller - Handles all admin operations
  */
-@WebServlet("/admin")
+@WebServlet("/admin/*")
 public class AdminController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private UserService userService;
@@ -37,9 +37,8 @@ public class AdminController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-    	request.getRequestDispatcher("/WEB-INF/pages/adminDashboard.jsp").forward(request, response);
-    	
         
+        // Check authentication
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect(request.getContextPath() + "/login");
@@ -52,9 +51,10 @@ public class AdminController extends HttpServlet {
             return;
         }
         
+        // Get the path after /admin/
         String path = request.getPathInfo();
         
-        if (path == null || "/dashboard".equals(path)) {
+        if (path == null || "/dashboard".equals(path) || "/".equals(path)) {
             showDashboard(request, response);
         } else if ("/doctors".equals(path)) {
             manageDoctors(request, response);
@@ -63,15 +63,28 @@ public class AdminController extends HttpServlet {
         } else if ("/users".equals(path)) {
             manageUsers(request, response);
         } else {
-            showDashboard(request, response);
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
         }
     }
     
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-    	request.getRequestDispatcher("//pages/adminDashboard.jsp").forward(request, response);
         
+        // Check authentication
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        
+        User user = (User) session.getAttribute("user");
+        if (!"Admin".equalsIgnoreCase(user.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        
+        // Get the path after /admin/
         String path = request.getPathInfo();
         
         if ("/addDoctor".equals(path)) {
@@ -96,7 +109,7 @@ public class AdminController extends HttpServlet {
             int totalUsers = userService.getAllUsers().size();
             
             List<Appointment> recentAppointments = appointmentService.getAllAppointments();
-            if (recentAppointments.size() > 10) {
+            if (recentAppointments != null && recentAppointments.size() > 10) {
                 recentAppointments = recentAppointments.subList(0, 10);
             }
             
@@ -106,11 +119,11 @@ public class AdminController extends HttpServlet {
             request.setAttribute("totalUsers", totalUsers);
             request.setAttribute("recentAppointments", recentAppointments);
             
-            request.getRequestDispatcher("/pages/adminDashboard.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/pages/adminDashboard.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error loading dashboard: " + e.getMessage());
-            request.getRequestDispatcher("/pages/adminDashboard.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/pages/adminDashboard.jsp").forward(request, response);
         }
     }
     
@@ -119,11 +132,11 @@ public class AdminController extends HttpServlet {
         try {
             List<Doctor> doctors = doctorService.getAllDoctors();
             request.setAttribute("doctors", doctors);
-            request.getRequestDispatcher("/pages/manageDoctors.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/pages/manageDoctors.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error loading doctors: " + e.getMessage());
-            request.getRequestDispatcher("/pages/manageDoctors.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/pages/manageDoctors.jsp").forward(request, response);
         }
     }
     
@@ -136,22 +149,39 @@ public class AdminController extends HttpServlet {
         String availability = request.getParameter("availability");
         String contact = request.getParameter("contact");
         
+        // Validate input
+        if (name == null || name.trim().isEmpty() ||
+            email == null || email.trim().isEmpty() ||
+            password == null || password.trim().isEmpty() ||
+            specialization == null || specialization.trim().isEmpty()) {
+            
+            request.setAttribute("error", "All required fields must be filled");
+            manageDoctors(request, response);
+            return;
+        }
+        
         try {
             // First create user account for doctor
             User user = new User(name, email, password, "Doctor");
             boolean userCreated = userService.registerUser(user);
             
             if (userCreated) {
-                Doctor doctor = new Doctor(user.getId(), name, specialization, availability, contact);
-                boolean doctorAdded = doctorService.addDoctor(doctor);
-                
-                if (doctorAdded) {
-                    request.setAttribute("success", "Doctor added successfully!");
+                // Get the user ID (you need to implement getUserIdByEmail method in UserService)
+                User createdUser = userService.getUserByEmail(email);
+                if (createdUser != null) {
+                    Doctor doctor = new Doctor(createdUser.getId(), name, specialization, availability, contact);
+                    boolean doctorAdded = doctorService.addDoctor(doctor);
+                    
+                    if (doctorAdded) {
+                        request.setAttribute("success", "Doctor added successfully!");
+                    } else {
+                        request.setAttribute("error", "Failed to add doctor details");
+                    }
                 } else {
-                    request.setAttribute("error", "Failed to add doctor details");
+                    request.setAttribute("error", "Failed to retrieve created user");
                 }
             } else {
-                request.setAttribute("error", "Failed to create doctor account");
+                request.setAttribute("error", "Failed to create doctor account. Email might already exist.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,11 +196,11 @@ public class AdminController extends HttpServlet {
         try {
             List<Appointment> appointments = appointmentService.getAllAppointments();
             request.setAttribute("appointments", appointments);
-            request.getRequestDispatcher("/pages/viewAppointment.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/pages/viewAppointment.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error loading appointments: " + e.getMessage());
-            request.getRequestDispatcher("/pages/viewAppointment.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/pages/viewAppointment.jsp").forward(request, response);
         }
     }
     
@@ -178,6 +208,12 @@ public class AdminController extends HttpServlet {
             throws ServletException, IOException {
         String appointmentIdStr = request.getParameter("appointmentId");
         String status = request.getParameter("status");
+        
+        if (appointmentIdStr == null || appointmentIdStr.trim().isEmpty()) {
+            request.setAttribute("error", "Appointment ID is required");
+            viewAppointments(request, response);
+            return;
+        }
         
         try {
             int appointmentId = Integer.parseInt(appointmentIdStr);
@@ -203,11 +239,11 @@ public class AdminController extends HttpServlet {
         try {
             List<User> users = userService.getAllUsers();
             request.setAttribute("users", users);
-            request.getRequestDispatcher("/pages/manageUsers.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/pages/manageUsers.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error loading users: " + e.getMessage());
-            request.getRequestDispatcher("/pages/manageUsers.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/pages/manageUsers.jsp").forward(request, response);
         }
     }
     
@@ -215,8 +251,23 @@ public class AdminController extends HttpServlet {
             throws ServletException, IOException {
         String userIdStr = request.getParameter("userId");
         
+        if (userIdStr == null || userIdStr.trim().isEmpty()) {
+            request.setAttribute("error", "User ID is required");
+            manageUsers(request, response);
+            return;
+        }
+        
         try {
             int userId = Integer.parseInt(userIdStr);
+            
+            // Optional: Check if trying to delete admin account
+            User userToDelete = userService.getUserById(userId);
+            if (userToDelete != null && "Admin".equalsIgnoreCase(userToDelete.getRole())) {
+                request.setAttribute("error", "Cannot delete admin account");
+                manageUsers(request, response);
+                return;
+            }
+            
             boolean deleted = userService.deleteUser(userId);
             
             if (deleted) {
@@ -237,6 +288,12 @@ public class AdminController extends HttpServlet {
     private void deleteDoctor(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         String doctorIdStr = request.getParameter("doctorId");
+        
+        if (doctorIdStr == null || doctorIdStr.trim().isEmpty()) {
+            request.setAttribute("error", "Doctor ID is required");
+            manageDoctors(request, response);
+            return;
+        }
         
         try {
             int doctorId = Integer.parseInt(doctorIdStr);

@@ -2,7 +2,7 @@
 <%@ page import="com.medicareplus.model.User, com.medicareplus.model.Doctor, java.util.List" %>
 <%
     User user = (User) session.getAttribute("user");
-    if (user == null || !"Patient".equalsIgnoreCase(user.getRole())) {
+    if (user == null || !"patient".equalsIgnoreCase(user.getRole())) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
@@ -52,7 +52,7 @@
         <div class="search-section">
             <h3>Search Doctors by Specialization</h3>
             <form action="${pageContext.request.contextPath}/patient/searchDoctors" method="post" class="search-form">
-                <input type="text" name="keyword" placeholder="Enter specialization (e.g., Cardiologist, Dermatologist)" value="<%= request.getAttribute("searchKeyword") != null ? request.getAttribute("searchKeyword") : "" %>">
+                <input type="text" name="keyword" placeholder="Enter specialization (e.g., Cardiologist, Neurologist)" value="<%= request.getAttribute("searchKeyword") != null ? request.getAttribute("searchKeyword") : "" %>">
                 <button type="submit" class="btn btn-primary">Search</button>
                 <a href="${pageContext.request.contextPath}/patient/bookAppointment" class="btn btn-secondary">Reset</a>
             </form>
@@ -71,16 +71,23 @@
                     <div class="doctor-icon">👨‍⚕️</div>
                     <div class="doctor-name"><%= doctor.getName() %></div>
                     <div class="doctor-specialization"><%= doctor.getSpecialization() %></div>
+                    <div class="doctor-qualification"><%= doctor.getQualification() %></div>
                     <div class="doctor-contact">📞 <%= doctor.getContact() %></div>
-                    <div class="doctor-availability">🕐 <%= doctor.getAvailability() %></div>
+                    <div class="doctor-fee">💰 Fee: $<%= doctor.getConsultationFee() %></div>
                     
                     <form action="${pageContext.request.contextPath}/patient/bookAppointment" method="post">
                         <input type="hidden" name="doctorId" value="<%= doctor.getDoctorId() %>">
                         <div class="form-group">
+                            <label>Date:</label>
                             <input type="date" name="date" required min="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>">
                         </div>
                         <div class="form-group">
+                            <label>Time:</label>
                             <input type="time" name="time" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Symptoms:</label>
+                            <textarea name="symptoms" rows="2" placeholder="Describe your symptoms..."></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">Book Appointment</button>
                     </form>

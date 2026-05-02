@@ -2,7 +2,7 @@
 <%@ page import="com.medicareplus.model.User, com.medicareplus.model.Patient, com.medicareplus.model.Appointment, java.util.List" %>
 <%
     User user = (User) session.getAttribute("user");
-    if (user == null || !"Patient".equalsIgnoreCase(user.getRole())) {
+    if (user == null || !"patient".equalsIgnoreCase(user.getRole())) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
@@ -53,22 +53,22 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">📅</div>
-                <div class="stat-number"><%= request.getAttribute("totalAppointments") %></div>
+                <div class="stat-number"><%= request.getAttribute("totalAppointments") != null ? request.getAttribute("totalAppointments") : 0 %></div>
                 <div class="stat-label">Total Appointments</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">⏳</div>
-                <div class="stat-number"><%= request.getAttribute("pendingCount") %></div>
+                <div class="stat-number"><%= request.getAttribute("pendingCount") != null ? request.getAttribute("pendingCount") : 0 %></div>
                 <div class="stat-label">Pending</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">✅</div>
-                <div class="stat-number"><%= request.getAttribute("approvedCount") %></div>
+                <div class="stat-number"><%= request.getAttribute("approvedCount") != null ? request.getAttribute("approvedCount") : 0 %></div>
                 <div class="stat-label">Approved</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">📋</div>
-                <div class="stat-number"><%= request.getAttribute("completedCount") %></div>
+                <div class="stat-number"><%= request.getAttribute("completedCount") != null ? request.getAttribute("completedCount") : 0 %></div>
                 <div class="stat-label">Completed</div>
             </div>
         </div>
@@ -77,8 +77,14 @@
             <h3>Your Profile</h3>
             <% Patient patient = (Patient) request.getAttribute("patient"); %>
             <% if (patient != null) { %>
-            <p><strong>Age:</strong> <%= patient.getAge() %> | <strong>Gender:</strong> <%= patient.getGender() %></p>
-            <p><strong>Contact:</strong> <%= patient.getContact() %> | <strong>Address:</strong> <%= patient.getAddress() %></p>
+                <p><strong>Age:</strong> <%= patient.getAge() %> | 
+                   <strong>Gender:</strong> <%= patient.getGender() %> | 
+                   <strong>Blood Group:</strong> <%= patient.getBloodGroup() != null ? patient.getBloodGroup() : "N/A" %></p>
+                <p><strong>Contact:</strong> <%= patient.getContact() %> | 
+                   <strong>Emergency:</strong> <%= patient.getEmergencyContact() != null ? patient.getEmergencyContact() : "N/A" %></p>
+                <p><strong>Address:</strong> <%= patient.getAddress() != null ? patient.getAddress() : "N/A" %></p>
+            <% } else { %>
+                <p>Profile information not available. Please contact administrator.</p>
             <% } %>
         </div>
         
@@ -89,6 +95,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Doctor</th>
+                        <th>Specialization</th>
                         <th>Date</th>
                         <th>Time</th>
                         <th>Status</th>
@@ -99,17 +106,22 @@
                         List<Appointment> appointments = (List<Appointment>) request.getAttribute("recentAppointments");
                         if (appointments != null && !appointments.isEmpty()) {
                             for (Appointment apt : appointments) {
+                                String status = apt.getStatus() != null ? apt.getStatus() : "pending";
+                                String statusClass = "status-" + status.toLowerCase();
                     %>
                     <tr>
                         <td><%= apt.getAppointmentId() %></td>
                         <td><%= apt.getDoctorName() != null ? apt.getDoctorName() : "N/A" %></td>
-                        <td><%= apt.getDate() %></td>
-                        <td><%= apt.getTime() %></td>
-                        <td><span class="status-<%= apt.getStatus().toLowerCase() %>"><%= apt.getStatus() %></span></td>
+                        <td><%= apt.getDoctorSpecialization() != null ? apt.getDoctorSpecialization() : "N/A" %></td>
+                        <td><%= apt.getAppointmentDate() != null ? apt.getAppointmentDate() : "N/A" %></td>
+                        <td><%= apt.getAppointmentTime() != null ? apt.getAppointmentTime() : "N/A" %></td>
+                        <td><span class="<%= statusClass %>"><%= status %></span></td>
                     </tr>
                     <%      }
                         } else { %>
-                    <tr><td colspan="5" style="text-align:center">No appointments found</td></tr>
+                    <tr>
+                        <td colspan="6" style="text-align:center">No appointments found</td>
+                    </tr>
                     <% } %>
                 </tbody>
             </table>

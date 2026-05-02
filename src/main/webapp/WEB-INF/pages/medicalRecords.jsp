@@ -2,7 +2,7 @@
 <%@ page import="com.medicareplus.model.User, com.medicareplus.model.MedicalRecord, java.util.List" %>
 <%
     User user = (User) session.getAttribute("user");
-    if (user == null || !"Patient".equalsIgnoreCase(user.getRole())) {
+    if (user == null || !"patient".equalsIgnoreCase(user.getRole())) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
@@ -52,12 +52,12 @@
             %>
             <div class="record-card">
                 <div class="record-header">
-                    <div class="record-doctor">👨‍⚕️ Dr. <%= record.getDoctorName() %></div>
+                    <div class="record-doctor">👨‍⚕️ Dr. <%= record.getDoctorName() != null ? record.getDoctorName() : "Unknown" %></div>
                     <div class="record-date">📅 <%= record.getCreatedAt() != null ? record.getCreatedAt() : "N/A" %></div>
                 </div>
                 <div class="record-diagnosis">
                     <strong>Diagnosis:</strong>
-                    <p><%= record.getDiagnosis() %></p>
+                    <p><%= record.getDiagnosis() != null ? record.getDiagnosis() : "No diagnosis recorded" %></p>
                 </div>
                 <div class="record-prescription">
                     <strong>Prescription:</strong>
