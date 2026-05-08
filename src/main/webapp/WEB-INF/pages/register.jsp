@@ -11,7 +11,7 @@
     <div class="container">
         <div class="form-container">
             <div class="logo">
-                <h1>🏥 MediCare+</h1>
+                <h1>MediCare+</h1>
                 <p>Register as a New Patient</p>
             </div>
             

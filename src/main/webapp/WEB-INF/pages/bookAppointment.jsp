@@ -19,7 +19,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <h2>🏥 MediCare+ Patient</h2>
+                <h2>MediCare+ Patient</h2>
             </div>
             <div class="nav-links">
                 <a href="${pageContext.request.contextPath}/patient/dashboard">Dashboard</a>
@@ -68,12 +68,11 @@
                         for (Doctor doctor : doctors) {
                 %>
                 <div class="doctor-card">
-                    <div class="doctor-icon">👨‍⚕️</div>
                     <div class="doctor-name"><%= doctor.getName() %></div>
                     <div class="doctor-specialization"><%= doctor.getSpecialization() %></div>
                     <div class="doctor-qualification"><%= doctor.getQualification() %></div>
-                    <div class="doctor-contact">📞 <%= doctor.getContact() %></div>
-                    <div class="doctor-fee">💰 Fee: $<%= doctor.getConsultationFee() %></div>
+                    <div class="doctor-contact">Phone: <%= doctor.getContact() %></div>
+                    <div class="doctor-fee">Fee: Rs. <%= doctor.getConsultationFee() %></div>
                     
                     <form action="${pageContext.request.contextPath}/patient/bookAppointment" method="post">
                         <input type="hidden" name="doctorId" value="<%= doctor.getDoctorId() %>">

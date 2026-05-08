@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediCare+ - Forgot Password</title>
+    <title>MediCare+ - Reset Password</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
@@ -12,33 +12,27 @@
         <div class="form-container">
             <div class="logo">
                 <h1>MediCare+</h1>
-                <p>Reset Your Password</p>
+                <p>Create New Password</p>
             </div>
 
-            <h2>Forgot Password</h2>
+            <h2>Reset Password</h2>
 
             <% if (request.getAttribute("error") != null) { %>
                 <div class="alert alert-error"><%= request.getAttribute("error") %></div>
             <% } %>
 
-            <% if (request.getAttribute("success") != null) { %>
-                <div class="alert alert-success"><%= request.getAttribute("success") %></div>
-            <% } %>
-
-            <% if (request.getAttribute("resetLink") != null) { %>
-                <div class="alert alert-success">
-                    Development reset link:
-                    <a href="<%= request.getAttribute("resetLink") %>">Open reset page</a>
-                </div>
-            <% } %>
-
-            <form action="${pageContext.request.contextPath}/forgetPassword" method="post">
+            <form action="${pageContext.request.contextPath}/resetPassword" method="post">
+                <input type="hidden" name="token" value="<%= request.getAttribute("token") == null ? "" : request.getAttribute("token") %>">
                 <div class="form-group">
-                    <label for="email">Registered Email</label>
-                    <input type="email" id="email" name="email" required placeholder="Enter your email address" autocomplete="username">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" required minlength="6" placeholder="Min 6 characters" autocomplete="new-password">
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6" placeholder="Re-enter new password" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Reset Password</button>
                 </div>
                 <div class="form-footer">
                     <a href="${pageContext.request.contextPath}/login">Back to Login</a>

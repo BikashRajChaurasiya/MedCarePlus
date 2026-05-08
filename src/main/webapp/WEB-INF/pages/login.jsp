@@ -39,8 +39,8 @@
                     <small>User Roles</small>
                 </div>
                 <div>
-                    <span>JDBC</span>
-                    <small>MySQL</small>
+                    <span>OPD</span>
+                    <small>Always Open</small>
                 </div>
             </div>
         </section>
@@ -100,7 +100,7 @@
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <div class="input-with-icon">
-                        <span aria-hidden="true">✉</span>
+                        <span aria-hidden="true"></span>
                         <input type="email" id="email" name="email" value="<%= rememberedEmail %>" required placeholder="name@example.com" autocomplete="username">
                     </div>
                     <small class="field-error" id="emailError"></small>
@@ -109,7 +109,7 @@
                 <div class="form-group">
                     <label for="password">Password</label>
                     <div class="input-with-icon">
-                        <span aria-hidden="true">●</span>
+                        <span aria-hidden="true"></span>
                         <input type="password" id="password" name="password" required minlength="6" placeholder="Enter your password" autocomplete="current-password">
                         <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password">Show</button>
                     </div>
@@ -121,7 +121,7 @@
                         <input type="checkbox" name="rememberMe" value="true" <%= rememberedEmail.isEmpty() ? "" : "checked" %>>
                         <span>Remember Me</span>
                     </label>
-                    <a href="${pageContext.request.contextPath}/pages/forgetPassword.jsp">Forgot Password?</a>
+                    <a href="${pageContext.request.contextPath}/forgetPassword">Forgot Password?</a>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block login-submit">
@@ -137,7 +137,7 @@
     </main>
 
     <footer class="login-footer">
-        © 2026 HealthCare System. All rights reserved.
+        2026 HealthCare System. All rights reserved.
     </footer>
 
     <script>

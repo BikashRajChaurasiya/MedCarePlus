@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediCare+ - Patient Registration</title>
+    <title>MediCare+ :Patient Registration</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=patient-register-20260503">
 </head>
 <body class="patient-register-page">
@@ -35,7 +35,7 @@
                     <div class="form-group">
                         <label for="fullName">Full Name *</label>
                         <div class="input-with-icon">
-                            <span>👤</span>
+                            <span aria-hidden="true"></span>
                             <input type="text" id="fullName" name="fullName" required value="<%= patient.getFullName() != null ? patient.getFullName() : "" %>" placeholder="Enter full name">
                         </div>
                         <small class="field-error"></small>
@@ -53,7 +53,7 @@
                     <div class="form-group">
                         <label for="password">Password *</label>
                         <div class="input-with-icon">
-                            <span>●</span>
+                            <span aria-hidden="true"></span>
                             <input type="password" id="password" name="password" required minlength="6" placeholder="Minimum 6 characters">
                             <button type="button" class="password-toggle" data-target="password">Show</button>
                         </div>
@@ -63,7 +63,7 @@
                     <div class="form-group">
                         <label for="confirmPassword">Confirm Password *</label>
                         <div class="input-with-icon">
-                            <span>●</span>
+                            <span aria-hidden="true"></span>
                             <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6" placeholder="Re-enter password">
                             <button type="button" class="password-toggle" data-target="confirmPassword">Show</button>
                         </div>

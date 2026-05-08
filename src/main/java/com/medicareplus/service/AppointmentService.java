@@ -29,6 +29,10 @@ public class AppointmentService {
         return appointmentDAO.findAll();
     }
 
+    public List<Appointment> searchAppointments(String keyword) throws SQLException, ClassNotFoundException {
+        return appointmentDAO.search(keyword);
+    }
+
     public boolean updateAppointmentStatus(int appointmentId, String status) throws SQLException, ClassNotFoundException {
         return appointmentDAO.updateStatus(appointmentId, status);
     }
@@ -38,7 +42,29 @@ public class AppointmentService {
     }
 
     public boolean addMedicalRecord(MedicalRecord record) throws SQLException, ClassNotFoundException {
-        return medicalRecordDAO.add(record);
+        validateMedicalRecord(record);
+        return medicalRecordDAO.save(record);
+    }
+
+    public boolean saveMedicalRecordForDoctor(MedicalRecord record, int doctorId) throws SQLException, ClassNotFoundException {
+        Appointment appointment = appointmentDAO.findById(record.getAppointmentId());
+        if (appointment == null || appointment.getDoctorId() != doctorId) {
+            throw new SecurityException("You are not allowed to update this patient's medical record.");
+        }
+        validateMedicalRecord(record);
+        boolean saved = medicalRecordDAO.save(record);
+        if (saved) {
+            appointmentDAO.updateStatus(record.getAppointmentId(), "completed");
+        }
+        return saved;
+    }
+
+    public List<MedicalRecord> getAllMedicalRecords() throws SQLException, ClassNotFoundException {
+        return medicalRecordDAO.findAll();
+    }
+
+    public List<MedicalRecord> searchMedicalRecords(String keyword) throws SQLException, ClassNotFoundException {
+        return medicalRecordDAO.search(keyword);
     }
 
     public List<MedicalRecord> getMedicalRecordsByPatientId(int patientId) throws SQLException, ClassNotFoundException {
@@ -59,5 +85,17 @@ public class AppointmentService {
 
     public boolean isSlotAvailable(int doctorId, String date, String time) throws SQLException, ClassNotFoundException {
         return appointmentDAO.isSlotAvailable(doctorId, date, time);
+    }
+
+    private void validateMedicalRecord(MedicalRecord record) {
+        if (record.getAppointmentId() <= 0) {
+            throw new IllegalArgumentException("Appointment is required.");
+        }
+        if (record.getDiagnosis() == null || record.getDiagnosis().trim().isEmpty()) {
+            throw new IllegalArgumentException("Diagnosis is required.");
+        }
+        if (record.getPrescription() == null || record.getPrescription().trim().isEmpty()) {
+            throw new IllegalArgumentException("Prescribed medicines are required.");
+        }
     }
 }
