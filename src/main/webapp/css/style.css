@@ -314,8 +314,12 @@ textarea::placeholder {
 .nav-links {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px;
+    min-width: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: thin;
 }
 
 .nav-links a {
@@ -1542,8 +1546,12 @@ body {
 .nav-links {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px;
+    min-width: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: thin;
 }
 
 .nav-links a {

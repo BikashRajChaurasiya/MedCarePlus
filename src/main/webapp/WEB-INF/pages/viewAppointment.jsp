@@ -32,10 +32,14 @@
             <% } else if ("doctor".equals(role)) { %>
                 <a href="${pageContext.request.contextPath}/doctor/appointments" class="active">Appointments</a>
                 <a href="${pageContext.request.contextPath}/doctor/medicalRecords">Medical Records</a>
+                <a href="${pageContext.request.contextPath}/doctor/about">About</a>
+                <a href="${pageContext.request.contextPath}/doctor/contact">Contact</a>
             <% } else { %>
                 <a href="${pageContext.request.contextPath}/patient/bookAppointment">Book Appointment</a>
                 <a href="${pageContext.request.contextPath}/patient/myAppointments" class="active">Appointments</a>
                 <a href="${pageContext.request.contextPath}/patient/medicalRecords">Medical Records</a>
+                <a href="${pageContext.request.contextPath}/patient/about">About</a>
+                <a href="${pageContext.request.contextPath}/patient/contact">Contact</a>
             <% } %>
             <a href="${pageContext.request.contextPath}/logout">Logout</a>
         </div>

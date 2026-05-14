@@ -24,8 +24,10 @@
             <div class="nav-links">
                 <a href="${pageContext.request.contextPath}/patient/dashboard">Dashboard</a>
                 <a href="${pageContext.request.contextPath}/patient/bookAppointment" class="active">Book Appointment</a>
-                <a href="${pageContext.request.contextPath}/patient/myAppointments">My Appointments</a>
+                <a href="${pageContext.request.contextPath}/patient/myAppointments">Appointments</a>
                 <a href="${pageContext.request.contextPath}/patient/medicalRecords">Medical Records</a>
+                <a href="${pageContext.request.contextPath}/patient/about">About</a>
+                <a href="${pageContext.request.contextPath}/patient/contact">Contact</a>
                 <a href="${pageContext.request.contextPath}/logout">Logout</a>
             </div>
             <div class="user-info">
